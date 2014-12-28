@@ -1,0 +1,65 @@
+/*!
+*You may ask why I wrote empty css block,
+*Well, only CSS Gods know how it works
+*/
+body{
+}
+#top, footer{
+	background: #3f8ec0;
+	width: 100%;
+	height: 5%;
+}
+#wrapper{
+	height: 70%
+}
+#internet{
+	display: none;
+	height: 100%;
+	width: 100%;
+	background: #c3c3c3;
+	opacity: 50%;
+    position: absolute;
+	z-index: 100;
+}
+#msg{
+	margin: 25%;
+	font-size: 20px;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+#chat{
+	height: 100%;
+	float: left;
+	overflow-y: auto;
+}
+#here{
+	height: 100%;
+	width: 30%;
+	border-style: solid;
+	border-left-width: 1px;
+	float: right;
+}
+.hold{
+	padding: 10px 0px 0px 10px;
+	font-size: 18;
+	color: #3f8ec0;
+}
+#new{
+	width: 98%;
+	margin-left: 0.5%; 
+	padding: 0.5%;
+	border-style: solid;
+    border-width: 1px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+#message{
+	width: inherit;
+	margin: 0px 1% 3px;
+	resize: none;
+}
+#send , #enterl{
+	float: right;
+}
+#styles{
+	float: right;
+}
