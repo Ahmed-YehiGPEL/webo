@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <LastUsedBuildConfiguration>Release</LastUsedBuildConfiguration>
+    <LastUsedPlatform>Any CPU</LastUsedPlatform>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword />
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/Cipher.dll">
+      <publishTime>12/26/2014 12:00:50</publishTime>
+    </File>
+    <File Include="bin/WEBO.dll">
+      <publishTime>12/27/2014 00:56:06</publishTime>
+    </File>
+    <File Include="HtmlPage1.html">
+      <publishTime>12/25/2014 09:27:30</publishTime>
+    </File>
+    <File Include="RegisterationForum.Master">
+      <publishTime>12/26/2014 18:31:00</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>12/27/2014 00:56:12</publishTime>
+    </File>
+    <File Include="WebForm1.aspx">
+      <publishTime>12/26/2014 17:59:42</publishTime>
+    </File>
+  </ItemGroup>
+</Project>
