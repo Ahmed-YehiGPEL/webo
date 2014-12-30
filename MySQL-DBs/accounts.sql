@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2014-12-28 16:56:57
+Date: 2014-12-30 12:58:31
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -95,6 +95,22 @@ CREATE TABLE `uacc` (
   `stActivity` varchar(255) CHARACTER SET latin1 NOT NULL,
   `acKey` varchar(255) NOT NULL,
   `codeforcesHandle` varchar(255) NOT NULL,
+  `isActive` text NOT NULL,
+  `regDate` text NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `pNum` (`pNum`,`acKey`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Function structure for Empty
+-- ----------------------------
+DROP FUNCTION IF EXISTS `Empty`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `Empty`(`Field Name` text) RETURNS int(11)
+BEGIN
+	#Routine body goes here...
+	
+	RETURN 0;
+END
+;;
+DELIMITER ;
