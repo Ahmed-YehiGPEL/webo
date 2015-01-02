@@ -10,7 +10,7 @@
 namespace WEBO {
     
     
-    public partial class Login {
+    public partial class mangement {
         
         /// <summary>
         /// form1 control.
@@ -22,66 +22,75 @@ namespace WEBO {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// uIDLabel control.
+        /// newPWDBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label uIDLabel;
+        protected global::System.Web.UI.WebControls.TextBox newPWDBox;
         
         /// <summary>
-        /// uIDBox control.
+        /// Label1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox uIDBox;
+        protected global::System.Web.UI.WebControls.Label Label1;
         
         /// <summary>
-        /// uPWDLabel control.
+        /// newRePWDBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label uPWDLabel;
+        protected global::System.Web.UI.WebControls.TextBox newRePWDBox;
         
         /// <summary>
-        /// uPWD control.
+        /// newEmailBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox uPWD;
+        protected global::System.Web.UI.WebControls.TextBox newEmailBox;
         
         /// <summary>
-        /// chkBx control.
+        /// nickNameBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chkBx;
+        protected global::System.Web.UI.WebControls.TextBox nickNameBox;
         
         /// <summary>
-        /// errorLabel control.
+        /// secQuestions control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label errorLabel;
+        protected global::System.Web.UI.WebControls.DropDownList secQuestions;
         
         /// <summary>
-        /// loginButton control.
+        /// secAnswer control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button loginButton;
+        protected global::System.Web.UI.WebControls.TextBox secAnswer;
+        
+        /// <summary>
+        /// btnCommit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnCommit;
     }
 }

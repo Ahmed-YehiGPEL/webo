@@ -6,72 +6,69 @@
 <head runat="server">
     <title></title>
     <style type="text/css">
-        .auto-style1 {
-            height: 21px;
+        .auto-style2 {
+            width: 420px;
+        }
+        .auto-style5 {
+            height: 26px;
+            width: 254px;
+        }
+        .auto-style6 {
+            width: 254px;
+        }
+        .auto-style7 {
+            height: 26px;
+            width: 264px;
+        }
+        .auto-style8 {
+            width: 264px;
         }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
-    <div>
-    
-    </div>
-        <asp:Login ID="Login1" runat="server" BorderStyle="Double" CreateUserUrl="~/WebForm1.aspx" FailureAction="RedirectToLoginPage" Font-Names="Lucida Console" ForeColor="Green" InstructionText="Please Input your Seat ID and Password To Proceed" OnAuthenticate="Login1_Authenticate" OnLoggedIn="Login1_LoggedIn" RememberMeSet="True" TitleText="Sample Log in Test" UserNameLabelText="Seat ID" UserNameRequiredErrorMessage="Seat ID is Required" Width="351px" OnLoginError="Login1_LoginError">
-            <CheckBoxStyle BorderColor="#CC6699" BorderStyle="Dotted" />
-            <InstructionTextStyle Font-Bold="True" Font-Italic="False" Font-Names="Courier New" Font-Size="9pt" ForeColor="Blue" />
-            <LabelStyle BorderStyle="Ridge" />
-            <LayoutTemplate>
-                <table cellpadding="1" cellspacing="0" style="border-collapse:collapse;">
-                    <tr>
-                        <td>
-                            <table cellpadding="0" style="width:351px;">
-                                <tr>
-                                    <td align="center" colspan="2">Sample Log in Test</td>
-                                </tr>
-                                <tr>
-                                    <td align="center" colspan="2" style="color:Blue;font-family:Courier New;font-size:9pt;font-weight:bold;font-style:normal;">Please Input your Seat ID and Password To Proceed</td>
-                                </tr>
-                                <tr>
-                                    <td align="right" style="border-style:Ridge;">
-                                        <asp:Label ID="UserNameLabel" runat="server" AssociatedControlID="UserName">Seat ID</asp:Label>
-                                    </td>
-                                    <td>
-                                        <asp:TextBox ID="UserName" runat="server" BorderStyle="Double" MaxLength="10" TextMode="Number"></asp:TextBox>
-                                        <asp:RequiredFieldValidator ID="UserNameRequired" runat="server" ControlToValidate="UserName" ErrorMessage="Seat ID is Required" ToolTip="Seat ID is Required" ValidationGroup="Login1">*</asp:RequiredFieldValidator>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right" style="border-style:Ridge;">
-                                        <asp:Label ID="PasswordLabel" runat="server" AssociatedControlID="Password">Password:</asp:Label>
-                                    </td>
-                                    <td>
-                                        <asp:TextBox ID="Password" runat="server" BorderStyle="Double" TextMode="Password"></asp:TextBox>
-                                        <asp:RequiredFieldValidator ID="PasswordRequired" runat="server" ControlToValidate="Password" ErrorMessage="Password is required." ToolTip="Password is required." ValidationGroup="Login1">*</asp:RequiredFieldValidator>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" style="border-color:#CC6699;border-style:Dotted;">
-                                        <asp:CheckBox ID="RememberMe" runat="server" Checked="True" Text="Remember me next time." />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" colspan="2" style="color:Red;">
-                                        <asp:Literal ID="FailureText" runat="server" EnableViewState="False"></asp:Literal>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right" colspan="2">
-                                        <asp:Button ID="LoginButton" runat="server" CommandName="Login" ForeColor="Red" OnClick="LoginButton_Click1" Text="Log In" ValidationGroup="Login1" />
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </LayoutTemplate>
-            <LoginButtonStyle ForeColor="Red" />
-            <TextBoxStyle BorderStyle="Double" />
-        </asp:Login>
+        Sample Login System<br />
+        <table style="height: 138px; width: 392px">
+            <tr>
+                <td class="auto-style7">
+                    <asp:Label Text="User-ID :" runat="server" ID="uIDLabel"/>
+                </td>
+                <td class="auto-style5">
+                    <asp:TextBox runat="server" ID="uIDBox" TextMode="Number" MaxLength="10" Width="167px"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="auto-style8">
+                    <asp:Label Text="Password :" runat="server" ID="uPWDLabel"/>
+                </td>
+                <td class="auto-style6">
+                    <asp:TextBox runat="server" ID="uPWD" TextMode="Password" Width="165px"/>
+                </td>
+            </tr>
+            <tr>
+             <td class="auto-style2" colspan="2">
+                 <asp:CheckBox Text="Remember me next time for next 30 days" runat="server" ID="chkBx" BorderStyle="Dotted"/>
+             </td>
+            </tr>
+            <tr>
+                <td class="auto-style2" colspan="2">
+                    <asp:Label  Text="" runat="server" ID="errorLabel" ForeColor="Red"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <asp:Button Text="Login" ID="loginButton" runat="server" align="Center" ForeColor="Green" Height="29px" Width="424px" OnClick="loginButton_Click2"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1" class="auto-style8">
+                    <asp:LinkButton Text="Forgot your password !" runat="server" />
+                </td>
+                <td class="auto-style6">
+                    <asp:LinkButton Text="Register an account" runat="server" PostBackUrl="~/register.aspx" />
+                </td>
+            </tr>
+        </table>
     </form>
 </body>
 </html>

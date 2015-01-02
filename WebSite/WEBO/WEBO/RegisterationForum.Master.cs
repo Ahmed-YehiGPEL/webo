@@ -8,13 +8,8 @@ using MySql.Web;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using Cipher;
-/*
- * Email Validation >> Done
- * Set Connection >> 
- * Compare Data>>
- * Read Data >>
- * Insert Data >>
- */
+using System.Net.Mail;
+
 namespace WEBO
 {
     public partial class RegisterationForum : System.Web.UI.MasterPage
@@ -41,12 +36,19 @@ namespace WEBO
         string sCodeforceHandle;
         bool bRecieveInfo = false;
         bool bAgreeOnTerms = false;
+        string sAcKey = "";
         #endregion
         #region Data Validation
         bool bIDExist = false;
         bool bIDFree = false;
         bool bIDNumMatch = false;
         bool bValidAccount = false;
+        #endregion
+        #region Email
+        private const string mailSubject = "Welcom to ASU FCIS 2014 - Activation Mail [ no reply E-mail ]";
+        private const string mailBody = "Welcome to ASU FCIS 2014\nPlease don't reply on this E-mail\nCopy this activation code to the activation area:\n\n";
+        private const string smtpPassword = "webo2014fcisproject_smtpServer";
+        private const string smtpUser = "fcis.admin@fcis.tk";
         #endregion
         #endregion
         protected void Page_Load(object sender, EventArgs e)
@@ -100,6 +102,13 @@ namespace WEBO
                 {
                     activitiesCheckBox.Items.Add(reader["acName"].ToString()); // Push items  while reading
                 }
+                cmd.Dispose();
+                reader.Dispose();
+                loadStr = "SELECT scQuestion FROM secquestions;";
+                cmd = new MySqlCommand(loadStr, tempCon);
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    secQuestion.Items.Add(reader["scQuestion"].ToString());  // push items into security questions                
             }
         }
         protected void validateExistID(object sender, ServerValidateEventArgs args)
@@ -168,30 +177,35 @@ namespace WEBO
                     if (bIDNumMatch == true)
                     {
                         
-                        Response.Write("Every thing is Right");
                         bValidAccount = true;
                         
                         //Execute Injection Process
                     }
-                    else
-                    {
-                        //Error is already expressed through 
-                        Response.Write("Every thing is Right Expect that the id and num don't match");
-                    }
                 }
-                else
-                {
-                    Response.Write("ID is not FREE");
-                }
-            }
-            else
-            {
-                Response.Write("Wrong ID");
-                //ERROR ID DOESN'T Exist
             }
         }
         #endregion
-
+        protected string sendActEmail(string actKey, string email)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage("fcis.admin@fcis.tk", email);
+                mail.Subject = mailSubject;
+                mail.Body = mailBody + actKey;
+                string smtpServer = System.Configuration.ConfigurationManager.ConnectionStrings["EmailSMTPServer"].ConnectionString;
+                SmtpClient smtpClient = new SmtpClient(smtpServer);
+                System.Net.NetworkCredential accecCredit = new System.Net.NetworkCredential(smtpUser, smtpPassword);
+                smtpClient.UseDefaultCredentials = false;
+                smtpClient.Credentials = accecCredit;
+                
+                smtpClient.Send(mail);
+                return "Done";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
         protected void Button1_Click(object sender, EventArgs e)
         {
             if (bAgreeOnTerms == true)
@@ -199,7 +213,10 @@ namespace WEBO
                 fetchData();
                 validateID();
                 if (bValidAccount == true)
+                {
                     registerAccount();
+                }
+                
             }
             else
             {
@@ -213,61 +230,74 @@ namespace WEBO
         protected void registerAccount()
         {
             try
-             {
-           //Ciphering the password with itself+name
-            string sEncryptedPass = StringCipher.Encrypt(sPass,iID.ToString());
-           //The Activation KeyCode
-            string sAcKey = StringCipher.Encrypt(sPass + iID.ToString() + sFullName, iID.ToString() + acmLevel);
-            string sQuery = "INSERT INTO uacc (ID,fullName,acPass,pNum,Email,nickName,acmLevel,stActivity,acKey,codeforcesHandle,regDate,isActive) VALUES(@ID,@fullName,@acPass,@pNum,@Email,@nickName,@acmLevel,@stActivity,@acKey,@codeforcesHandle,@regDate,@isActive);";
-            string conStr = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString.ToString();//"server=" + dpServer + "uid=" + uID + "pwd=" + uPWD + "database=" + dpName;
-            MySqlConnection tempCon = new MySqlConnection(conStr);
-            tempCon.Open();
-           //Add PARAMS 
-            MySqlCommand cmd = new MySqlCommand(sQuery, tempCon);
-            cmd.Parameters.AddWithValue("@ID", iID);
-            cmd.Parameters.AddWithValue("@fullName", sFullName);
-            cmd.Parameters.AddWithValue("@acPass", sEncryptedPass);
-            cmd.Parameters.AddWithValue("@pNum", iNum);
-            cmd.Parameters.AddWithValue("@Email", sEmail);
-            cmd.Parameters.AddWithValue("@nickName", sNickName);
-            cmd.Parameters.AddWithValue("@acKey", sAcKey);
-            cmd.Parameters.AddWithValue("@acmLevel", acmLevel);
-            cmd.Parameters.AddWithValue("@stActivity", sActivity);
-            cmd.Parameters.AddWithValue("@codeforcesHandle",sCodeforceHandle);
-            cmd.Parameters.AddWithValue("@regDate", DateTime.Now.Date.ToString());
-            cmd.Parameters.AddWithValue("@isActive", "N");
-            cmd.ExecuteNonQuery(); // then Execute
+            {
+                //Ciphering the password with itself+name
+                string sEncryptedPass = StringCipher.Encrypt(sPass, iID.ToString());
+                //The Activation KeyCode
+                sAcKey = StringCipher.Encrypt(sPass + iID.ToString() + sFullName, iID.ToString() + acmLevel);
+                string sQuery = "INSERT INTO uacc (ID,fullName,acPass,pNum,Email,nickName,acmLevel,stActivity,acKey,codeforcesHandle,regDate,isActive,secQuestion,secAnswer,loginState) VALUES(@ID,@fullName,@acPass,@pNum,@Email,@nickName,@acmLevel,@stActivity,@acKey,@codeforcesHandle,@regDate,@isActive,@secQuestion,@secAnswer,@loginState);";
+                string conStr = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString.ToString();//"server=" + dpServer + "uid=" + uID + "pwd=" + uPWD + "database=" + dpName;
+                MySqlConnection tempCon = new MySqlConnection(conStr);
+                tempCon.Open();
+                //Add PARAMS 
+                MySqlCommand cmd = new MySqlCommand(sQuery, tempCon);
+                cmd.Parameters.AddWithValue("@ID", iID);
+                cmd.Parameters.AddWithValue("@fullName", sFullName);
+                cmd.Parameters.AddWithValue("@acPass", sEncryptedPass);
+                cmd.Parameters.AddWithValue("@pNum", iNum);
+                cmd.Parameters.AddWithValue("@Email", sEmail);
+                cmd.Parameters.AddWithValue("@nickName", sNickName);
+                cmd.Parameters.AddWithValue("@acKey", sAcKey);
+                cmd.Parameters.AddWithValue("@acmLevel", acmLevel);
+                cmd.Parameters.AddWithValue("@stActivity", sActivity);
+                cmd.Parameters.AddWithValue("@codeforcesHandle", sCodeforceHandle);
+                cmd.Parameters.AddWithValue("@regDate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                cmd.Parameters.AddWithValue("@isActive", "N");
+                cmd.Parameters.AddWithValue("@secQuestion", secQuestion.SelectedItem.Text);
+                cmd.Parameters.AddWithValue("@secAnswer", scAnswer.Text);
+                cmd.Parameters.AddWithValue("@loginState", "O");
+                cmd.ExecuteNonQuery(); // then Execute
+                
+                tempCon.Close();
+                /**********************************************************************************************/
+                //then we set the ID to reserved
+                tempCon.Open();
 
-            tempCon.Close();
-           /**********************************************************************************************/
-           //then we set the ID to reserved
-            tempCon.Open();
+                sQuery = "UPDATE student_id SET Reserved=1 WHERE SeatID=" + iID.ToString() + ";";
+                cmd = new MySqlCommand(sQuery, tempCon);
+                cmd.ExecuteNonQuery();
+                tempCon.Close();
+                /**********************************************************************************************/
+                if (bRecieveInfo == true)
+                    ApplyNotifcations();
 
-            sQuery = "UPDATE student_id SET Reserved=1 WHERE SeatID=" + iID.ToString() + ";";
-            cmd = new MySqlCommand(sQuery, tempCon);
-            cmd.ExecuteNonQuery();
-            tempCon.Close();
-           /**********************************************************************************************/
-            if (bRecieveInfo == true)
-                ApplyNotifcations();
-            
-            SetCookies(new string[] { iID.ToString(), sAcKey,sFullName},new string[]{"UserName","acKey","fullName"});
+               string res =  sendActEmail(sAcKey, sEmail);
+                SetCookies(new string[] { iID.ToString(), sFullName }, new string[] { "uID", "fullName" }, DateTime.Now.AddDays(3));
 
-            Response.Redirect("activate.aspx");
-               
+                if (res == "Done")
+                    Response.Redirect("activate.aspx");
+                else
+                    Response.Write(res);
+
             }
-       catch(Exception Exc){
+            catch (Exception Exc)
+            {
                 Response.Write("    " + Exc.ToString());
+            }
+            finally
+            {
+                GC.Collect();
             }
 
         }
 
-        private void SetCookies(string[] CookiesToSet,string[] namesToSet)
+        private void SetCookies(string[] CookiesToSet,string[] namesToSet,DateTime expires)
         {
 
            for(int i=0;i<CookiesToSet.Length;i++)
            {
                Response.Cookies[namesToSet[i]].Value = CookiesToSet[i];
+               Response.Cookies[namesToSet[i]].Expires = expires;
            }
 
         }
@@ -287,16 +317,16 @@ namespace WEBO
         {
             try
             {
-            string sQuery = "INSERT INTO emailNotifcations (SeatID,Email) VALUES(@SeatID,@Email);";
-            string conStr = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString.ToString();//"server=" + dpServer + "uid=" + uID + "pwd=" + uPWD + "database=" + dpName;
-            MySqlConnection tempCon = new MySqlConnection(conStr);
-            tempCon.Open();
-            MySqlCommand cmd = new MySqlCommand(sQuery,tempCon);
-            cmd.Parameters.AddWithValue("@SeatID",iID.ToString());
-            cmd.Parameters.AddWithValue("@Email",sEmail);
-            cmd.ExecuteNonQuery();
-            tempCon.Close();
-            tempCon.Dispose();
+                string sQuery = "INSERT INTO emailNotifcations (SeatID,Email) VALUES(@SeatID,@Email);";
+                string conStr = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString.ToString();//"server=" + dpServer + "uid=" + uID + "pwd=" + uPWD + "database=" + dpName;
+                MySqlConnection tempCon = new MySqlConnection(conStr);
+                tempCon.Open();
+                MySqlCommand cmd = new MySqlCommand(sQuery,tempCon);
+                cmd.Parameters.AddWithValue("@SeatID",iID.ToString());
+                cmd.Parameters.AddWithValue("@Email",sEmail);
+                cmd.ExecuteNonQuery();
+                tempCon.Close();
+                tempCon.Dispose();
             }
             catch  (MySqlException exc)
             {  

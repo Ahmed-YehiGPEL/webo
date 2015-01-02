@@ -12,61 +12,147 @@ namespace WEBO
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!IsPostBack)
+            {
 
-        }
-        private const string mailSubject = "Welcom to ASU FCIS 2014 - Activation Mail";
-        private const string mailBody = "Welcome to ASU FCIS 2014\nPlease copy this activation code to the activation area:\n";
-        protected void Button1_Click(object sender, EventArgs e)
-        {
-            string acKey = Response.Cookies["acKey"].ToString();
-            string userName = Response.Cookies["tempUser"].ToString();
-            string sCon = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString;
-            string sQuery = "SELECT ID,acKey FROM uacc WHERE ID=" + userName + ";";
-            MySqlConnection con = new MySqlConnection(sCon);
-            con.Open();
-            MySqlCommand cmd = con.CreateCommand();
-            cmd.CommandText = sQuery;
-            MySqlDataReader reader = cmd.ExecuteReader();
-            string temUsr = "", temAC = "";
-            while (reader.Read())
-            {
-                temUsr = reader["ID"].ToString();
-                temAC = reader["acKey"].ToString();
-            }
-            if (acKey == temAC && temUsr == Response.Cookies["UserName"].ToString())
-            {
-                Response.Redirect("index.html");
-                Response.Cookies["acKey"].Value = "-1";
+                string sQuery = "SELECT scQuestion FROM secquestions;";
+                string conStr = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString.ToString();//"server=" + dpServer + "uid=" + uID + "pwd=" + uPWD + "database=" + dpName;
+                MySqlConnection tempCon = new MySqlConnection(conStr);
+                tempCon.Open();
+                MySqlCommand cmd = new MySqlCommand(sQuery, tempCon);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    secQuestions.Items.Add(reader["scQuestion"].ToString());
 
-            }
-            else
-            {
-                Response.Write("WRONG WRONG");
             }
         }
-
-        protected void Button2_Click(object sender, EventArgs e)
+        private const string mailSubject = "Welcom to ASU FCIS 2014 - Activation Mail [ no reply E-mail ]";
+        private const string mailBody = "Welcome to ASU FCIS 2014\nPlease don't reply on this E-mail\nCopy this activation code to the activation area:\n\n";
+        private const string smtpPassword = "webo2014fcisproject_smtpServer";
+        private const string smtpUser = "fcis.admin@fcis.tk";
+        bool bExistID = false;
+        private bool bReversed = false;
+        protected void validateExistID(object sender, ServerValidateEventArgs args)
         {
-            string userName = getCookie("UserName");
+         
+                string sQuery = "SELECT SeatID,Reserved FROM student_id WHERE SeatID=" + uIDBox.Text + ";";
+                string conStr = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString.ToString();//"server=" + dpServer + "uid=" + uID + "pwd=" + uPWD + "database=" + dpName;
+                MySqlConnection tempCon = new MySqlConnection(conStr);
+                tempCon.Open();
+                MySqlCommand cmd = new MySqlCommand(sQuery, tempCon);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (!reader.HasRows)
+                {
+                    args.IsValid = false;
+                }
+                else
+                {
+                    args.IsValid = true;
+                }
+                bExistID = args.IsValid;
+         
+        }
+        private string getACKey(string uID)
+        {
+             string acKey = "";
+             string sCon = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString;
+             MySqlConnection con = new MySqlConnection(sCon);
+             con.Open();
+             MySqlCommand cmd = con.CreateCommand();
+             cmd.CommandText = "SELECT acKey FROM uacc WHERE ID=" + uID + ';';
+             MySqlDataReader reader = cmd.ExecuteReader();
+             while (reader.Read())
+                 acKey = reader["acKey"].ToString();
+            
+            return acKey;
+        }
+        
+        protected void Button1_Click(object sender, EventArgs e)//Activate
+        {
+            /*
+             *Get user id from cookies
+             *Get user ac from table
+             *compare them the ac and the ac written in
+             *if yes , activate 
+             *if no , show error message
+             */
+                string userName = Request.Cookies["uID"].Value;
+                string acKey = getACKey(userName);
+                if (acKey == actCodeBox.Text)
+                {
+                    activateAccount(userName);
+                    Response.Redirect("~/index.html");
+                }
+                else
+                {
+                    StatusLabel.Text = "Error, Wrong Activation Code ";
+                }
+            
+        }
+        private void activateAccount(string user)   
+        {
             string sCon = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString;
-            string sQuery = "SELECT acKey FROM uacc WHERE ID=" + userName + ";";
             MySqlConnection con = new MySqlConnection(sCon);
+            string sQuery = "UPDATE uacc SET `isActive`=\"Y\" WHERE `ID`=" + user + ";";
             con.Open();
             MySqlCommand cmd = new MySqlCommand(sQuery, con);
-            MySqlDataReader reader = cmd.ExecuteReader();
-            string tempKey = "";
-            while (reader.Read())
+            cmd.ExecuteNonQuery();
+            con.Close();
+            
+            GC.Collect();
+        }
+        protected void Button2_Click(object sender, EventArgs e) // Check and activate
+        {
+            try
             {
-                tempKey = reader["acKey"].ToString();
-            }
-            string res = sendActEmail(tempKey,emailTextBox.Text);
-            if (res != "Done")
+               
+                string uID = uIDBox.Text;
+                string sAnswer = secAnswer.Text;
+                string sQuestion = secQuestions.SelectedItem.Text;
+
+                if (bExistID == true)
+                {
+
+                    string sCon = System.Configuration.ConfigurationManager.ConnectionStrings["MySQLDBConnection"].ConnectionString;
+                    MySqlConnection con = new MySqlConnection(sCon);
+                    string sQuery = "SELECT secQuestion,secAnswer FROM uacc WHERE ID=" + uID + ";";
+                    con.Open();
+                    MySqlCommand cmd = new MySqlCommand(sQuery, con);
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    string temAC = "", temQU = "";
+                    while (reader.Read())
+                    {
+                        temAC = reader["secAnswer"].ToString();
+                        temQU = reader["secQuestion"].ToString();
+                    }
+                    if (temAC == sAnswer && sQuestion == temQU)
+                    {
+                        string acKey = getACKey(uID);
+                        string res = sendActEmail(acKey, emailTextBox.Text);
+                        if (res == "Done")
+                        {
+                            StatusLabel.Text = "Email Sent Succesfully Please Refer Back To Your Inbox, and check the Spam/Junk mail folder";
+                            
+
+                        }
+                        else
+                        {
+                            StatusLabel.Text = res;
+                            
+                        }
+                    }
+                    else
+                        StatusLabel.Text = "Error While Matching Question And Answer Please Try Again";
+                }
+                
+              }
+            catch (Exception exc)
             {
-                Response.Write("Email address done and sent " + tempKey + "  to "+ emailTextBox.Text);
+                StatusLabel.Text = "An error occurred,error message:\n" + exc.Message;
+                StatusLabel.Visible = true;
 
             }
-            else
-                Response.Write(res);
+
 
         }
         protected string sendActEmail(string actKey, string email)
@@ -76,13 +162,13 @@ namespace WEBO
                 MailMessage mail = new MailMessage("fcis.admin@fcis.tk", email);
                 mail.Subject = mailSubject;
                 mail.Body = mailBody + actKey;
-                SmtpClient smtpClient = new SmtpClient("mail.fics.tk", 25);
-                //SmtpClient smtpClient = new SmtpClient(System.Configuration.ConfigurationManager.ConnectionStrings["EmailSMTP"].ConnectionString);
-                smtpClient.EnableSsl = true;
-                System.Net.NetworkCredential accecCredit = new System.Net.NetworkCredential("fcis.admin@fcis.tk", "fcis2014weboproject");
+                string smtpServer = System.Configuration.ConfigurationManager.ConnectionStrings["EmailSMTPServer"].ConnectionString;
+                Response.Write(smtpServer);
+                SmtpClient smtpClient = new SmtpClient(smtpServer);
+
+                System.Net.NetworkCredential accecCredit = new System.Net.NetworkCredential(smtpUser, smtpPassword);
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = accecCredit;
-                smtpClient.ServicePoint.MaxIdleTime = 1;
                 smtpClient.Send(mail);
                 return "Done";
             }
@@ -99,15 +185,67 @@ namespace WEBO
 
         protected void Unnamed_Click(object sender, EventArgs e)
         {
-            Response.Write(Request.Cookies["UserName"].Value.ToString());
          
         }
         protected void setCook(object sendet, EventArgs e)
         {
-            HttpCookie COOK = new HttpCookie("UserName", "2014170069");
-            COOK.Expires = new DateTime(2015, 12, 25);
-            Response.Cookies.Add(COOK);
-            
+
+        }
+
+        protected void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            //deactivating controls
+            reverseControls();
+            Response.Write("Welcome");
+            Response.Redirect("~/activate.aspx");
+        }
+        private void reverseControls()
+        {
+            actCodeBox.Enabled = !actCodeBox.Enabled;
+            btnActivate.Enabled = !btnActivate.Enabled;
+            lblActCode.Visible = !lblActCode.Visible;
+            lblAddress.Visible = !lblAddress.Visible;
+
+            actCodeBox.Visible = !actCodeBox.Visible;
+            btnActivate.Visible = !btnActivate.Visible;
+
+
+            secQuestions.Visible = !(secQuestions.Visible);
+            secAnswer.Visible = !secAnswer.Visible;
+            uIDBox.Visible = !(uIDBox.Visible);
+            emailTextBox.Visible = !(emailTextBox.Visible);
+            lblSecAnswer.Visible = !lblSecAnswer.Visible;
+            lblSecQuestion.Visible = !lblSecQuestion.Visible;
+            lblUID.Visible = !lblUID.Visible;
+            lblEmail.Visible = !lblEmail.Visible;
+            lblNote.Visible = !lblNote.Visible;
+            Button2.Visible = !Button2.Visible;
+
+
+            RequiredFieldValidator1.Visible = !(RequiredFieldValidator1.Visible);
+            RequiredFieldValidator2.Visible = !(RequiredFieldValidator2.Visible);
+            RequiredFieldValidator3.Visible = !(RequiredFieldValidator3.Visible);
+            RequiredFieldValidator4.Visible = !(RequiredFieldValidator4.Visible);
+            CustomValidator1.Visible = !CustomValidator1.Visible;
+
+            secQuestions.Enabled = !(secQuestions.Enabled);
+            secAnswer.Enabled = !(secAnswer.Enabled);
+            uIDBox.Enabled = !(uIDBox.Enabled);
+            emailTextBox.Enabled = !(emailTextBox.Enabled);
+            Button2.Enabled = !(Button2.Enabled);
+
+
+            RequiredFieldValidator1.Enabled = !(RequiredFieldValidator1.Enabled);
+            RequiredFieldValidator2.Enabled = !(RequiredFieldValidator2.Enabled);
+            RequiredFieldValidator3.Enabled = !(RequiredFieldValidator3.Enabled);
+            RequiredFieldValidator4.Enabled = !(RequiredFieldValidator4.Enabled);
+            CustomValidator1.Enabled = !CustomValidator1.Enabled;
+            bReversed = !bReversed;
+        }
+
+        protected void Button3_Click(object sender, EventArgs e)
+        {
+               reverseControls();
         }
     }
 }
