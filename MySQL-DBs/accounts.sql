@@ -10,20 +10,20 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2014-12-30 12:58:31
+Date: 2015-01-02 23:44:32
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for actkeys
+-- Table structure for acc_status
 -- ----------------------------
-DROP TABLE IF EXISTS `actkeys`;
-CREATE TABLE `actkeys` (
-  `ID` mediumint(9) NOT NULL,
-  `actKey` mediumtext CHARACTER SET ascii NOT NULL,
-  UNIQUE KEY `ID` (`ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `acc_status`;
+CREATE TABLE `acc_status` (
+  `ID` int(11) NOT NULL,
+  `State` varchar(2) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for emailnotifcations
@@ -56,6 +56,17 @@ CREATE TABLE `fullname` (
   `fullName` text NOT NULL,
   UNIQUE KEY `ID` (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Table structure for secquestions
+-- ----------------------------
+DROP TABLE IF EXISTS `secquestions`;
+CREATE TABLE `secquestions` (
+  `Num` mediumint(9) NOT NULL AUTO_INCREMENT,
+  `scQuestion` varchar(255) CHARACTER SET ascii NOT NULL,
+  PRIMARY KEY (`Num`),
+  UNIQUE KEY `ID` (`Num`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for student_activities
@@ -96,7 +107,10 @@ CREATE TABLE `uacc` (
   `acKey` varchar(255) NOT NULL,
   `codeforcesHandle` varchar(255) NOT NULL,
   `isActive` text NOT NULL,
-  `regDate` text NOT NULL,
+  `regDate` timestamp NOT NULL,
+  `secQuestion` varchar(255) NOT NULL,
+  `secAnswer` varchar(255) NOT NULL,
+  `loginState` varchar(2) NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `pNum` (`pNum`,`acKey`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -112,5 +126,16 @@ BEGIN
 	
 	RETURN 0;
 END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Event structure for delete_nonActive
+-- ----------------------------
+DROP EVENT IF EXISTS `delete_nonActive`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` EVENT `delete_nonActive` ON SCHEDULE EVERY 1 MINUTE STARTS '2015-01-01 00:00:00' ON COMPLETION NOT PRESERVE ENABLE DO BEGIN
+		DELETE FROM uacc WHERE  uacc.regDate <= TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 DAY)) && uacc.isActive ='N';
+	END
 ;;
 DELIMITER ;
