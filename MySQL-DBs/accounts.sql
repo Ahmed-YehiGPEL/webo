@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50617
 File Encoding         : 65001
 
-Date: 2015-01-02 23:44:32
+Date: 2015-01-03 00:01:39
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -26,6 +26,12 @@ CREATE TABLE `acc_status` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
+-- Records of acc_status
+-- ----------------------------
+INSERT INTO `acc_status` VALUES ('2014170001', 'o');
+INSERT INTO `acc_status` VALUES ('2014170002', 'i');
+
+-- ----------------------------
 -- Table structure for emailnotifcations
 -- ----------------------------
 DROP TABLE IF EXISTS `emailnotifcations`;
@@ -34,6 +40,13 @@ CREATE TABLE `emailnotifcations` (
   `Email` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`SeatID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of emailnotifcations
+-- ----------------------------
+INSERT INTO `emailnotifcations` VALUES ('2014170001', 'ahmed.yehia.1177@gmail.com');
+INSERT INTO `emailnotifcations` VALUES ('2014170061', 'ahmed@gmail.com');
+INSERT INTO `emailnotifcations` VALUES ('2014170069', 'xma@mo.com');
 
 -- ----------------------------
 -- Table structure for forumnumber
@@ -48,6 +61,10 @@ CREATE TABLE `forumnumber` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- ----------------------------
+-- Records of forumnumber
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for fullname
 -- ----------------------------
 DROP TABLE IF EXISTS `fullname`;
@@ -56,6 +73,10 @@ CREATE TABLE `fullname` (
   `fullName` text NOT NULL,
   UNIQUE KEY `ID` (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of fullname
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for secquestions
@@ -69,6 +90,18 @@ CREATE TABLE `secquestions` (
 ) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
+-- Records of secquestions
+-- ----------------------------
+INSERT INTO `secquestions` VALUES ('1', 'What city where you born in ?');
+INSERT INTO `secquestions` VALUES ('2', 'What\'s your middle name ?');
+INSERT INTO `secquestions` VALUES ('3', 'What\'s your favourite programming language ?');
+INSERT INTO `secquestions` VALUES ('4', 'What was your high school name ?');
+INSERT INTO `secquestions` VALUES ('5', 'What\'s your favourite quote ?');
+INSERT INTO `secquestions` VALUES ('6', 'What\'s your favourite meel ?');
+INSERT INTO `secquestions` VALUES ('7', 'What\'s your favourite PC Game ?');
+INSERT INTO `secquestions` VALUES ('8', 'What\'s your lucky number ?');
+
+-- ----------------------------
 -- Table structure for student_activities
 -- ----------------------------
 DROP TABLE IF EXISTS `student_activities`;
@@ -78,6 +111,17 @@ CREATE TABLE `student_activities` (
   `acDescription` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=ascii;
+
+-- ----------------------------
+-- Records of student_activities
+-- ----------------------------
+INSERT INTO `student_activities` VALUES ('1', 'Support', null);
+INSERT INTO `student_activities` VALUES ('2', 'ACM', null);
+INSERT INTO `student_activities` VALUES ('3', 'Sign In', null);
+INSERT INTO `student_activities` VALUES ('4', 'Open Source', null);
+INSERT INTO `student_activities` VALUES ('5', 'Compass', null);
+INSERT INTO `student_activities` VALUES ('6', 'Ikegami', null);
+INSERT INTO `student_activities` VALUES ('7', 'MS Tech Club', null);
 
 -- ----------------------------
 -- Table structure for student_id
@@ -90,6 +134,13 @@ CREATE TABLE `student_id` (
   `forumNum` bigint(5) DEFAULT NULL,
   PRIMARY KEY (`ID`,`SeatID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+-- ----------------------------
+-- Records of student_id
+-- ----------------------------
+INSERT INTO `student_id` VALUES ('1', '0', '2014170069', '22');
+INSERT INTO `student_id` VALUES ('2', '0', '2014170061', '23');
+INSERT INTO `student_id` VALUES ('3', '0', '2014170001', '24');
 
 -- ----------------------------
 -- Table structure for uacc
@@ -114,6 +165,10 @@ CREATE TABLE `uacc` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `pNum` (`pNum`,`acKey`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of uacc
+-- ----------------------------
 
 -- ----------------------------
 -- Function structure for Empty
